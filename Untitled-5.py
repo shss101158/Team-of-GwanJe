@@ -35,12 +35,11 @@ class View1GraphVisualization(QMainWindow):
     
     def update_canvas(self):
         self.dynamic_ax.clear()
-        timeStamp = list(range(len(self.datahub.view1)))
-        self.dynamic_ax.plot(timeStamp, self.datahub.view1)
+        self.dynamic_ax.plot(self.datahub.timestampOfView1, self.datahub.view1)
         self.dynamic_ax.figure.canvas.draw()
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = GraphVisualization()
+    ex = View1GraphVisualization()
     sys.exit(app.exec_())

@@ -5,7 +5,9 @@ import threading
 import sys, os
 from PyQt5.QtCore import QUrl, QTimer
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import *
+import pyqtgraph as pg
+import time
 from Untitled10Basis import View1GraphVisualization
 
 class MapViewer_Thread(QThread):
@@ -66,17 +68,58 @@ class MapViewer_Thread(QThread):
         self.view.loadFinished.connect(self.on_load_finished)
         print("showed")
 
-class GraphViewer(QMainWindow):
+class GraphViewer_Thread(QThread):
     def __init__(self, mainwindow):
         super().__init__()
         self.mainwindow = mainwindow
 
-        # Create the QWebEngineView widget
         self.view = QWebEngineView(self.mainwindow)
         self.view.setGeometry(0, 0, 800, 600)
 
-    def update_graph(self):
-        super().__init__()
+        hbox = QHBoxLayout()
+        self.pw1 = pg.PlotWidget(title="line chart")
+
+        hbox.addWidget(self.pw1)
+        self.setLayout(hbox)
+
+        # self.setGeometry(300, 100, 800, 500)  # x, y, width, height
+        self.setWindowTitle("Untitled-10Base")
+
+        self.x = []
+        self.y = []
+        # self.pw1.setXRange(1, 10)
+        # self.pw1.setYRange(1, 10)
+        # self.pw1.enableAutoScale()
+        # self.pw1.enableAutoRange()  # x,y축 모두 autorange..
+        # self.pw1.enableAutoRange(axis='x', enable=True)
+        # self.pw1.enableAutoRange(axis='x')
+        # self.pw1.enableAutoRange(axis='y')
+        # self.pw1.enableAutoRange(axis='xy')
+
+        # self.pw2.enableAutoRange()
+        self.pl = self.pw1.plot(pen='g')
+
+        self.mytimer = QTimer()
+        self.mytimer.start(1000)  # 1초마다 차트 갱신 위함...
+        self.mytimer.timeout.connect(self.get_data)
+
+        self.draw_chart(self.x, self.y)
+        self.show()
+
+    def draw_chart(self, x, y):
+        self.pl.setData(x=x, y=y)  # line chart 그리기
+
+    @pyqtSlot()
+    def get_data(self):
+        # print(time.localtime())
+        # print(time.strftime("%H%M%S", time.localtime()))
+        data: str = time.strftime("%S", time.localtime())  # 초 단위만 구함.
+
+        last_x = self.datahub.timeSpace [-1]
+        self.x.append(last_x)
+
+        self.y.append(self.datahub.View1 [-1])
+        self.draw_chart(self.x, self.y)
         
 
 class MainWindow(QMainWindow):
@@ -96,7 +139,8 @@ class MainWindow(QMainWindow):
         self.mapviewer.start()
 
 
-    def start(self):
+    def start_View1GraphVisualization(self):
+    
         self.show()
 
 

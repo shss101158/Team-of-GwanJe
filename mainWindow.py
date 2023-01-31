@@ -1,24 +1,286 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QLineEdit, QLabel, QMessageBox
-from PyQt5.QtCore import QObject, QThread, pyqtSlot, QRunnable, QThreadPool
-import sys
-import threading
-import sys, os
-from PyQt5.QtCore import QUrl, QTimer
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QHBoxLayout, QWidget, QLineEdit, QLabel, QMessageBox, QInputDialog
+from PyQt5.QtCore import QObject, QThread, pyqtSlot, QRunnable, QThreadPool, QUrl, QTimer
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEnginePage
-from PyQt5.QtWidgets import *
+
+import sys, os
 import pyqtgraph as pg
 import time
-from Untitled10Basis import View1GraphVisualization
+import numpy as np
 
-class MapViewer_Thread(QThread):
-    def __init__(self, mainwindow):
+# class GraphViewer_Thread(QThread):
+#     def __init__(self, mainwindow,datahub):
+#         super().__init__()
+#         self.mainwindow = mainwindow
+#         self.datahub = datahub
+
+#         self.view = QWebEngineView(self.mainwindow)
+#         self.view.load(QUrl())
+#         self.view.setGeometry(10, 10, 10, 10)
+        
+#         self.pw_angle = pg.PlotWidget(self.mainwindow)
+#         self.pw_angleSpeed = pg.PlotWidget(self.mainwindow)
+#         self.pw_accel = pg.PlotWidget(self.mainwindow)
+        
+#         self.pw_angle.setGeometry(10, 10, 300, 300)
+#         self.pw_angleSpeed.setGeometry(10, 320, 300, 300)
+#         self.pw_accel.setGeometry(10, 630, 300, 300)
+        
+
+#         self.curve_roll = self.pw_angle.plot(pen='r')
+#         self.curve_pitch = self.pw_angle.plot(pen='g')
+#         self.curve_yaw = self.pw_angle.plot(pen='b')
+
+#         self.curve_rollSpeed = self.pw_angleSpeed.plot(pen='r')
+#         self.curve_pitchSpeed = self.pw_angleSpeed.plot(pen='g')
+#         self.curve_yawSpeed = self.pw_angleSpeed.plot(pen='b')
+
+#         self.curve_xaccel = self.pw_accel.plot(pen='r')
+#         self.curve_yaccel = self.pw_accel.plot(pen='g')
+#         self.curve_zaccel = self.pw_accel.plot(pen='b')
+
+#         self.loadnum = 0
+
+#         self.init_sec = 0
+#         self.time = []
+#         self.roll = []
+#         self.pitch = []
+#         self.yaw = []
+#         self.rollSpeed = []
+#         self.pitchSpeed = []
+#         self.yawSpeed = []
+#         self.xaccel = []
+#         self.yaccel = []
+#         self.zaccel = []
+
+#     def update_data(self):
+#         lineRemain =len(self.datahub.timespace) > self.loadnum
+#         if lineRemain > 0:
+#             for i in range(lineRemain):
+#                 min = self.datahub.timespace[self.loadnum+i][1]
+#                 sec = self.datahub.timespace[self.loadnum+i][2]
+#                 tenmilis = self.datahub.timespace[self.loadnum+i][3]
+#                 total_sec = min*60+sec+tenmilis*0.01
+#                 if len(self.time)==0:
+#                     self.init_sec = total_sec
+#                 self.time.append(total_sec-self.init_sec)
+
+#                 self.roll.append(self.datahub.rolls[self.loadnum+i])
+#                 self.pitch.append(self.datahub.pitchs[self.loadnum+i])
+#                 self.yaw.append(self.datahub.yaws[self.loadnum+i])
+
+#                 self.rollSpeed.append(self.datahub.rollSpeeds[self.loadnum+i])
+#                 self.pitchSpeed.append(self.datahub.pitchSpeeds[self.loadnum+i])
+#                 self.yawSpeed.append(self.datahub.yawSpeeds[self.loadnum+i])
+
+#                 self.xaccel.append(self.datahub.Xaccels[self.loadnum+i])
+#                 self.yaccel.append(self.datahub.Yaccels[self.loadnum+i])
+#                 self.zaccel.append(self.datahub.Zaccels[self.loadnum+i])
+
+#             self.loadnum += lineRemain
+#         self.curve_roll.setData(x=self.time, y=self.roll)
+#         self.curve_pitch.setData(x=self.time, y=self.pitch)
+#         self.curve_yaw.setData(x=self.time, y=self.yaw)
+
+#         self.curve_rollSpeed.setData(x=self.time, y=self.rollSpeed)
+#         self.curve_pitchSpeed.setData(x=self.time, y=self.pitchSpeed)
+#         self.curve_yawSpeed.setData(x=self.time, y=self.yawSpeed)
+
+#         self.curve_xaccel.setData(x=self.time, y=self.xaccel)
+#         self.curve_yaccel.setData(x=self.time, y=self.yaccel)
+#         self.curve_zaccel.setData(x=self.time, y=self.zaccel)
+
+#         self.pw_angle.setXRange(self.time[-1]-10,self.time[-1])
+#         self.pw_angleSpeed.setXRange(self.time[-1]-10,self.time[-1])
+#         self.pw_accel.setXRange(self.time[-1]-10,self.time[-1])
+
+#     def on_load_finished(self):
+#         # to move the timer to the same thread as the QObject
+#         self.mytimer = QTimer(self)
+#         self.mytimer.timeout.connect(self.update_data)
+#         self.mytimer.start(500)
+#         print('Show Graph')
+
+#     def run(self):
+#         self.view.loadFinished.connect(self.on_load_finished)
+
+
+
+# class MapViewer_Thread(QThread):
+#     def __init__(self, mainwindow,datahub):
+#         super().__init__()
+#         self.mainwindow = mainwindow
+#         self.datahub= datahub
+#         # self.setWindowTitle("Real-time Dynamic Map")
+
+#         # Create the QWebEngineView widget
+#         self.view = QWebEngineView(self.mainwindow)
+#         self.view.setGeometry(320,220, 800, 600)
+        
+#         # Load the HTML file that contains the leaflet map
+#         path = os.path.abspath(__file__)
+#         dir_path = os.path.dirname(path)
+#         file_path = os.path.join(dir_path, 'map.html')
+#         self.view.load(QUrl.fromLocalFile(file_path))
+#         self.view.show()
+
+
+#     def on_load_finished(self):
+#         # Get the QWebEnginePage object
+    
+#         page = self.view.page()
+#         # Inject a JavaScript function to update the marker's location
+#         self.script = f"""
+#         var lat = 36.666;
+#         var lng = 126.666;
+#         var map = L.map("map").setView([lat,lng], 15);
+#         L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{
+#             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+#             maxZoom: 18,
+#         }}).addTo(map);
+#         var marker = L.marker([lat,lng]).addTo(map);
+#         /*
+#         trigger is a variable which update a map view according to their location
+#         */
+#         var trigger_javascript = 0;
+#         function updateMarker(latnew, lngnew, trigger_python) {{
+           
+#             marker.setLatLng([latnew, lngnew]);
+        
+#             if(trigger_python >= 1 && trigger_javascript == 0) {{
+#             map.setView([latnew,lngnew], 15);
+#             trigger_javascript = 1;
+#             }}
+#         }}
+#         """
+#         #{print(self.datahub.latitudes)}
+#         page.runJavaScript(self.script)
+#         # Create a QTimer to call the updateMarker function every second
+#         self.timer = QTimer(self)
+#         self.timer.timeout.connect(self.update_marker)
+#         self.timer.start(1000)
+
+#     def update_marker(self):
+#         #wait for receiving datas.....
+#         if len(self.datahub.latitudes) == 0:
+#             pass
+#         # Call the JavaScript function to update the marker's location
+#         else: 
+#             self.view.page().runJavaScript(f"updateMarker({self.datahub.latitudes[-1]},{self.datahub.longitudes[-1]},{len(self.datahub.latitudes)})")
+
+#     # Connect the QWebEngineView's loadFinished signal to the on_load_finished slot
+#     def run(self):
+#         self.view.loadFinished.connect(self.on_load_finished)
+#         print("show Map")
+
+# class MainWindow(QMainWindow):
+#     def __init__(self, datahub):
+#         self.app = QApplication(sys.argv)
+#         super().__init__()
+
+#         self.datahub = datahub
+#         self.resize(1440,1080)
+        
+#         """Set Buttons"""
+#         self.start_button = QPushButton("Press Start",self,)
+#         self.stop_button = QPushButton("Stop",self,)
+#         self.rf_port_edit = QLineEdit("COM8",self)
+        
+#         self.start_button.setEnabled(True)
+#         self.stop_button.setEnabled(False)
+#         self.rf_port_edit.setEnabled(True)
+        
+#         """Set Buttons Connection"""
+#         self.start_button.clicked.connect(self.start_button_clicked)
+#         self.stop_button.clicked.connect(self.stop_button_clicked)
+        
+#         """Set Geometry"""
+#         self.start_button.setGeometry(1170,400,200,150)
+#         self.stop_button.setGeometry(1170,600,200,150)
+#         QLabel("Enter your Serial Port:",self).setGeometry(1170,320,200,30)
+#         self.rf_port_edit.setGeometry(1170,350,200,30)
+        
+#         """Set Viewer Thread"""
+#         self.mapviewer = MapViewer_Thread(self,datahub)
+#         self.graphviewr = GraphViewer_Thread(self,datahub)
+#         self.mapviewer.start()
+#         self.graphviewr.start()
+
+#     # Run when start button is clicked
+#     def start_button_clicked(self):
+#         QMessageBox.information(self,"information","Program Start")
+#         FileName,ok = QInputDialog.getText(self,'Input Dialog', 'Enter your File Name',QLineEdit.Normal,"Your File Name")
+#         if ok:
+#             self.datahub.mySerialPort=self.rf_port_edit.text()
+#             self.datahub.file_Name = FileName+'.csv'
+#             self.datahub.communication_start()
+            
+#             self.datahub.serial_port_error=-1
+#             if self.datahub.check_communication_error():
+#                 QMessageBox.warning(self,"warning","SSUJJUN")
+#                 self.datahub.communication_stop()
+
+#             else:
+#                 self.datahub.datasaver_start()
+#                 self.start_button.setEnabled(False)
+#                 self.stop_button.setEnabled(True)
+#                 self.rf_port_edit.setEnabled(False)
+#         self.datahub.serial_port_error=-1
+#     # Run when stop button is clicked
+#     def stop_button_clicked(self):
+#         QMessageBox.information(self,"information","Program Stop")
+#         self.datahub.communication_stop()
+#         self.datahub.datasaver_stop()
+#         self.start_button.setEnabled(True)
+#         self.stop_button.setEnabled(False)
+#         self.rf_port_edit.setEnabled(False)     
+        
+#     # Main Window start method
+#     def start(self):
+#         self.show()
+        
+#     def setEventLoop(self):
+#         sys.exit(self.app.exec_())
+        
+#     # Run when mainwindow is closed
+#     def closeEvent(self, event):
+#         self.stop_button_clicked()
+#        event.accept()
+
+class MainWindow(QMainWindow):
+    def __init__(self, datahub):
+        self.s = time.time()
+        self.app = QApplication(sys.argv)
         super().__init__()
-        self.mainwindow = mainwindow
-        # self.setWindowTitle("Real-time Dynamic Map")
 
-        # Create the QWebEngineView widget
-        self.view = QWebEngineView(self.mainwindow)
-        self.view.setGeometry(0, 0, 800, 600)
+        self.datahub = datahub
+        self.resize(1440,1080)
+        
+        """Set Buttons"""
+        self.start_button = QPushButton("Press Start",self,)
+        self.stop_button = QPushButton("Stop",self,)
+        self.rf_port_edit = QLineEdit("COM8",self)
+        
+        self.start_button.setEnabled(True)
+        self.stop_button.setEnabled(False)
+        self.rf_port_edit.setEnabled(True)
+        
+        """Set Buttons Connection"""
+        self.start_button.clicked.connect(self.start_button_clicked)
+        self.stop_button.clicked.connect(self.stop_button_clicked)
+        
+        """Set Geometry"""
+        self.start_button.setGeometry(1170,400,200,150)
+        self.stop_button.setGeometry(1170,600,200,150)
+        QLabel("Enter your Serial Port:",self).setGeometry(1170,320,200,30)
+        self.rf_port_edit.setGeometry(1170,350,200,30)
+        
+
+
+        """initalize 1.map and 2.graph and timer"""
+
+        """1.initialize map"""
+        self.view = QWebEngineView(self)
+        self.view.setGeometry(320,220, 800, 600)
 
         # Load the HTML file that contains the leaflet map
         path = os.path.abspath(__file__)
@@ -27,122 +289,180 @@ class MapViewer_Thread(QThread):
         self.view.load(QUrl.fromLocalFile(file_path))
         self.view.show()
 
-
-    def on_load_finished(self):
-        # Get the QWebEnginePage object
-        try:
-            page = self.view.page()
-            print("eeeeeee")
-
-            # Inject a JavaScript function to update the marker's location
-            script = """
-            var map = L.map("map").setView([51.5, -0.09], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
-                maxZoom: 18,
-            }).addTo(map);
-            var marker = L.marker([51.5, -0.09]).addTo(map);
-            var lat = 51.5;
-            var lng = -0.09;
-            function updateMarker() {
-                lat = lat + 0.001;
-                lng = lng + 0.001;
-                marker.setLatLng([lat, lng]);
-            }
-            """
-            print("wwwwwwwwww")
-            page.runJavaScript(script)
-
-            # Create a QTimer to call the updateMarker function every second
-            self.timer = QTimer(self)
-            self.timer.timeout.connect(self.update_marker)
-            self.timer.start(1000)
-        except:
-            print("error appeared!")
-    def update_marker(self):
-        # Call the JavaScript function to update the marker's location
-        self.view.page().runJavaScript("updateMarker()")
-
-    # Connect the QWebEngineView's loadFinished signal to the on_load_finished slot
-    def run(self):
-        self.view.loadFinished.connect(self.on_load_finished)
-        print("showed")
-
-class GraphViewer_Thread(QThread):
-    def __init__(self, mainwindow):
-        super().__init__()
-        self.mainwindow = mainwindow
-
-        self.view = QWebEngineView(self.mainwindow)
-        self.view.setGeometry(0, 0, 800, 600)
-
-        hbox = QHBoxLayout()
-        self.pw1 = pg.PlotWidget(title="line chart")
-
-        hbox.addWidget(self.pw1)
-        self.setLayout(hbox)
-
-        # self.setGeometry(300, 100, 800, 500)  # x, y, width, height
-        self.setWindowTitle("Untitled-10Base")
-
-        self.x = []
-        self.y = []
-        # self.pw1.setXRange(1, 10)
-        # self.pw1.setYRange(1, 10)
-        # self.pw1.enableAutoScale()
-        # self.pw1.enableAutoRange()  # x,y축 모두 autorange..
-        # self.pw1.enableAutoRange(axis='x', enable=True)
-        # self.pw1.enableAutoRange(axis='x')
-        # self.pw1.enableAutoRange(axis='y')
-        # self.pw1.enableAutoRange(axis='xy')
-
-        # self.pw2.enableAutoRange()
-        self.pl = self.pw1.plot(pen='g')
-
-        self.mytimer = QTimer()
-        self.mytimer.start(1000)  # 1초마다 차트 갱신 위함...
-        self.mytimer.timeout.connect(self.get_data)
-
-        self.draw_chart(self.x, self.y)
-        self.show()
-
-    def draw_chart(self, x, y):
-        self.pl.setData(x=x, y=y)  # line chart 그리기
-
-    @pyqtSlot()
-    def get_data(self):
-        # print(time.localtime())
-        # print(time.strftime("%H%M%S", time.localtime()))
-        data: str = time.strftime("%S", time.localtime())  # 초 단위만 구함.
-
-        last_x = self.datahub.timeSpace [-1]
-        self.x.append(last_x)
-
-        self.y.append(self.datahub.View1 [-1])
-        self.draw_chart(self.x, self.y)
+        """2.initialize graph"""
+        self.pw_angle = pg.PlotWidget(self)
+        self.pw_angleSpeed = pg.PlotWidget(self)
+        self.pw_accel = pg.PlotWidget(self)
+        self.pw_angle.setGeometry(10, 10, 300, 300)
+        self.pw_angleSpeed.setGeometry(10, 320, 300, 300)
+        self.pw_accel.setGeometry(10, 630, 300, 300)
         
 
-class MainWindow(QMainWindow):
-    def __init__(self, datahub):
-        self.app = QApplication(sys.argv)
-        super().__init__()
-        # self.widgethub = Widgethub()
-        self.datahub = datahub
-        self.mapviewer = MapViewer_Thread(self)
+        self.curve_roll = self.pw_angle.plot(pen='r')
+        self.curve_pitch = self.pw_angle.plot(pen='g')
+        self.curve_yaw = self.pw_angle.plot(pen='b')
 
-        #버튼 누르면 연결해야하는 것
-        self.show_map_button = QPushButton("Show map",self)
-        self.show_map_button.clicked.connect(self.start_mapviewer)
-   
-    def start_mapviewer(self):
+        self.curve_rollSpeed = self.pw_angleSpeed.plot(pen='r')
+        self.curve_pitchSpeed = self.pw_angleSpeed.plot(pen='g')
+        self.curve_yawSpeed = self.pw_angleSpeed.plot(pen='b')
 
-        self.mapviewer.start()
+        self.curve_xaccel = self.pw_accel.plot(pen='r')
+        self.curve_yaccel = self.pw_accel.plot(pen='g')
+        self.curve_zaccel = self.pw_accel.plot(pen='b')
+
+        self.loadnum = 0
+
+        self.init_sec = 0
+        self.time = np.array([])
+        self.roll = np.array([])
+        self.pitch = np.array([])
+        self.yaw = np.array([])
+        self.rollSpeed = np.array([])
+        self.pitchSpeed = np.array([])
+        self.yawSpeed = np.array([])
+        self.xaccel = np.array([])
+        self.yaccel = np.array([])
+        self.zaccel = np.array([])
 
 
-    def start_View1GraphVisualization(self):
+
+        """update map and graph"""
+    def on_load_finished(self):
+
+        page = self.view.page()
+        # Inject a JavaScript function to update the marker's location
+        self.script = f"""
+        var lat = 36.666;
+        var lng = 126.666;
+        var map = L.map("map").setView([lat,lng], 15);
+        L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+            maxZoom: 18,
+        }}).addTo(map);
+        var marker = L.marker([lat,lng]).addTo(map);
+        /*
+        trigger is a variable which update a map view according to their location
+        */
+        var trigger_javascript = 0;
+        function updateMarker(latnew, lngnew, trigger_python) {{
+        
+            marker.setLatLng([latnew, lngnew]);
+        
+            if(trigger_python >= 1 && trigger_javascript == 0) {{
+            map.setView([latnew,lngnew], 15);
+            trigger_javascript = 1;
+            }}
+        }}
+        """
+        page.runJavaScript(self.script)
+
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_map_graph)
+        self.timer.start(1000)
+
+
+
+
+    def update_map_graph(self):
+        print(self.datahub.timespace)
+        """map update"""
+        #wait for receiving datas.....
+        if len(self.datahub.latitudes) == 0:
+            pass
+        # Call the JavaScript function to update the marker's location
+        else: 
+            self.view.page().runJavaScript(f"updateMarker({self.datahub.latitudes[-1]},{self.datahub.longitudes[-1]},{len(self.datahub.latitudes)})")
+
+            """graph update"""
+            lineRemain =len(self.datahub.timespace) > self.loadnum
+            if lineRemain > 0:
+                for i in range(lineRemain):
+                    min = self.datahub.timespace[self.loadnum+i][1]
+                    sec = self.datahub.timespace[self.loadnum+i][2]
+                    tenmilis = self.datahub.timespace[self.loadnum+i][3]
+                    total_sec = min*60+sec+tenmilis*0.01
+                    if len(self.time)==0:
+                        self.init_sec = total_sec
+                    self.time.append(total_sec-self.init_sec)
     
+                    self.roll.append(self.datahub.rolls[self.loadnum+i])
+                    self.pitch.append(self.datahub.pitchs[self.loadnum+i])
+                    self.yaw.append(self.datahub.yaws[self.loadnum+i])
+    
+                    self.rollSpeed.append(self.datahub.rollSpeeds[self.loadnum+i])
+                    self.pitchSpeed.append(self.datahub.pitchSpeeds[self.loadnum+i])
+                    self.yawSpeed.append(self.datahub.yawSpeeds[self.loadnum+i])
+    
+                    self.xaccel.append(self.datahub.Xaccels[self.loadnum+i])
+                    self.yaccel.append(self.datahub.Yaccels[self.loadnum+i])
+                    self.zaccel.append(self.datahub.Zaccels[self.loadnum+i])
+    
+                self.loadnum += lineRemain
+            self.curve_roll.setData(x=self.time, y=self.roll)
+            self.curve_pitch.setData(x=self.time, y=self.pitch)
+            self.curve_yaw.setData(x=self.time, y=self.yaw)
+    
+            self.curve_rollSpeed.setData(x=self.time, y=self.rollSpeed)
+            self.curve_pitchSpeed.setData(x=self.time, y=self.pitchSpeed)
+            self.curve_yawSpeed.setData(x=self.time, y=self.yawSpeed)
+    
+            self.curve_xaccel.setData(x=self.time, y=self.xaccel)
+            self.curve_yaccel.setData(x=self.time, y=self.yaccel)
+            self.curve_zaccel.setData(x=self.time, y=self.zaccel)
+    
+            self.pw_angle.setXRange(self.time[-1]-10,self.time[-1])
+            self.pw_angleSpeed.setXRange(self.time[-1]-10,self.time[-1])
+            self.pw_accel.setXRange(self.time[-1]-10,self.time[-1])
+
+
+
+        # """Set Viewer Thread"""
+        # self.mapviewer = MapViewer_Thread(self,datahub)
+        # self.graphviewr = GraphViewer_Thread(self,datahub)
+        # self.mapviewer.start()
+        # self.graphviewr.start()
+
+    # Run when start button is clicked
+    def start_button_clicked(self):
+        QMessageBox.information(self,"information","Program Start")
+        FileName,ok = QInputDialog.getText(self,'Input Dialog', 'Enter your File Name',QLineEdit.Normal,"Your File Name")
+        if ok:
+            self.datahub.mySerialPort=self.rf_port_edit.text()
+            self.datahub.file_Name = FileName+'.csv'
+            self.datahub.communication_start()
+            
+            self.datahub.serial_port_error=-1
+            if self.datahub.check_communication_error():
+                QMessageBox.warning(self,"warning","SSUJJUN")
+                self.datahub.communication_stop()
+
+            else:
+                self.datahub.datasaver_start()
+                self.start_button.setEnabled(False)
+                self.stop_button.setEnabled(True)
+                self.rf_port_edit.setEnabled(False)
+        self.datahub.serial_port_error=-1
+
+    # Run when stop button is clicked
+    def stop_button_clicked(self):
+        QMessageBox.information(self,"information","Program Stop")
+        self.datahub.communication_stop()
+        self.datahub.datasaver_stop()
+        self.start_button.setEnabled(True)
+        self.stop_button.setEnabled(False)
+        self.rf_port_edit.setEnabled(False)     
+        
+    # Main Window start method
+    def start(self):
+        self.view.loadFinished.connect(self.on_load_finished)
         self.show()
-
-
+        print(time.time()-self.s)
+        
     def setEventLoop(self):
+        print("11")
         sys.exit(self.app.exec_())
+        
+    # Run when mainwindow is closed
+    def closeEvent(self, event):
+        self.stop_button_clicked()
+        event.accept()
